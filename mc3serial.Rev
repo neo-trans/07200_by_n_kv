@@ -24,19 +24,18 @@ mymc3 = mcmcmc(
 )
 print("  - Created MCMCMC object")
 
-checkFreq = 100
+checkFreq = 50
 
-# Ignore checkpoints for the time being as they crash RevBayes-mpi
-# e.g. https://github.com/revbayes/revbayes/issues/184
-#if (fileExists("07200_by_n_kv_run_1_chain_0.ckp")) {
-#  print("  - Initializing from checkpoint")
-#  mymc3.initializeFromCheckpoint(ckpFile)
-#} else {
-  mymc3.burnin(generations = 3000, tuningInterval = checkFreq * 3)
-#}
+if (fileExists("07200_by_n_kv_run_1_chain_0.ckp")) {
+  print("  - Initializing from checkpoint")
+  mymc3.initializeFromCheckpoint(ckpFile)
+  stopping_rules[1] = srMaxTime(71, "hours")
+} else {
+  mymc3.burnin(generations = checkFreq * 30, tuningInterval = checkFreq * 3)
+  stopping_rules[1] = srMaxTime(2, "hours")
+}
 
-stopping_rules[1] = srMaxTime(71, "hours")
-# Overshoot ESS slightly as calculations may differ
+# Overshoot target ESS slightly as calculations may differ
 stopping_rules[2] = srMinESS(333, paramFile, checkFreq)
 # PSRF requires RevBayes 1.2.5
 stopping_rules[3] = srGelmanRubin(1.01, paramFile, checkFreq)
