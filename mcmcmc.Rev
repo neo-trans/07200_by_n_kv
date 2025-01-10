@@ -1,5 +1,11 @@
 print("Timestamp:", time("year"), time("day"), time("seconds"))
 seed(0)
+if (args.size() == 0) {
+  minEss = 333
+} else {
+  minEss = args[1]
+}
+maxPSRF = 1.01
 
 neo <- readDiscreteCharacterData("syab07200.neo.nex")
 trans <- readDiscreteCharacterData("syab07200.trans.nex")
@@ -37,11 +43,12 @@ checkFreq = 100
 
 stopping_rules[1] = srMaxTime(71, "hours")
 # Overshoot ESS slightly as calculations may differ
-stopping_rules[2] = srMinESS(333, paramFile, checkFreq)
+stopping_rules[2] = srMinESS(minEss, paramFile, checkFreq)
 # PSRF requires RevBayes 1.2.5
-stopping_rules[3] = srGelmanRubin(1.01, paramFile, checkFreq)
+stopping_rules[3] = srGelmanRubin(maxPSRF, paramFile, checkFreq)
 
 print("  - Commencing MCMCMC run at", time("year"), time("day"), time("seconds"))
+print("    Terminate when ESS =", minESS, "or PSRF <", maxPSRF)
 mymc3.run(rules = stopping_rules, checkpointFile = ckpFile, checkpointInterval = checkFreq)
 
 print("  # # # RUN COMPLETE # # #  ")
