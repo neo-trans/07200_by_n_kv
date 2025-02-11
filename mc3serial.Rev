@@ -35,17 +35,20 @@ checkFreq = 50
 if (fileExists("07200_by_n_kv_run_1_chain_0.ckp")) {
   print("  - Initializing from checkpoint")
   mymc3.initializeFromCheckpoint(ckpFile)
-  stopping_rules[1] = srMaxTime(71, "hours")
+  runHours = 2
 } else {
   mymc3.burnin(generations = checkFreq * 30, tuningInterval = checkFreq * 3)
-  stopping_rules[1] = srMaxTime(2, "hours")
+  runHours = 71
 }
 
+stopping_rules[1] = srMaxTime(runHours, "hours")
 stopping_rules[2] = srMinESS(minEss, paramFile, checkFreq)
 # PSRF requires RevBayes 1.2.5
 stopping_rules[3] = srGelmanRubin(maxPSRF, paramFile, checkFreq)
 
-print("  - Commencing MCMCMC run at", time("year"), time("day"), time("seconds"))
+print("  - Commencing MCMCMC run at",
+      time("year"), time("day"), time("seconds") / 60 / 60)
+print("    Run until ESS >", minESS, "or for", runHours, "hours")
 mymc3.run(rules = stopping_rules, checkpointFile = ckpFile, checkpointInterval = checkFreq)
 
 print("  # # # RUN COMPLETE # # #  ")
