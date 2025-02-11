@@ -48,7 +48,7 @@ stopping_rules[3] = srGelmanRubin(maxPSRF, paramFile, checkFreq)
 
 print("  - Commencing MCMCMC run at",
       time("year"), time("day"), time("seconds") / 60 / 60)
-print("    Terminate when ESS =", minESS, "or PSRF <", maxPSRF)
+print("    Terminate when ESS =", minEss, "or PSRF <", maxPSRF)
 mymc3.run(rules = stopping_rules, checkpointFile = ckpFile, checkpointInterval = checkFreq)
 
 print("  # # # RUN COMPLETE # # #  ")
